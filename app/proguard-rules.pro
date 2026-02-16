@@ -28,6 +28,7 @@
 
 -keep class re.limus.timas.hook.HookEntry { *; }
 -keep,allowobfuscation class re.limus.timas.ui.SettingActivity { *; }
+-keep,allowobfuscation class re.limus.timas.activity.SAFAgentActivity { *; }
 
 # ProtoBuf 相关
 -keepclassmembers public class * extends com.google.protobuf.MessageLite {*;}
