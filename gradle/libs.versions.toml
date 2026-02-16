@@ -18,13 +18,13 @@ okhttp = "5.3.2"
 
 # Xposed
 xposed = "82"
-xpHelper = "2.9"
+xpHelper = "3.0"
 
 # ByteBuddy
-byteBuddy = "1.18.4"
+byteBuddy = "1.18.5"
 
 # Json
-fastjson2 = "2.0.60"
+fastjson2 = "2.0.61"
 
 # ProtoBuf
 protobuf-javalite = "4.33.5"
@@ -43,7 +43,7 @@ okhttp3 = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okht
 
 # Xposed
 xposed-api = { group = "de.robv.android.xposed", name = "api", version.ref = "xposed" }
-xphelper = { group = "com.github.suzhelan", name = "XPHelper", version.ref = "xpHelper" }
+xphelper = { group = "com.github.suzhelan", name = "XpHelper", version.ref = "xpHelper" }
 
 # BytyBuddy-Android
 byte-buddy-android = { group = "net.bytebuddy", name = "byte-buddy-android", version.ref = "byteBuddy" }
