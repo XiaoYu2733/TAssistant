@@ -12,12 +12,11 @@ import de.robv.android.xposed.XC_MethodHook
 import re.limus.timas.R
 import re.limus.timas.annotations.RegisterToUI
 import re.limus.timas.annotations.UiCategory
-import re.limus.timas.api.ContactUtils
 import re.limus.timas.api.CreateElement
 import re.limus.timas.api.TIMCustomMenu
-import re.limus.timas.api.TIMSendMsgTool
 import re.limus.timas.hook.base.SwitchHook
 import re.limus.timas.hook.items.message.core.OnMenuBuilder
+import re.limus.timas.hook.utils.PttUtils
 import top.sacz.xphelper.dexkit.DexFinder
 import top.sacz.xphelper.ext.callMethod
 import top.sacz.xphelper.ext.getFieldValue
@@ -73,7 +72,6 @@ object PttForward : SwitchHook(), OnMenuBuilder {
             }
 
             multiTargetList?.forEach { target ->
-                // 使用反射获取 uin 和 uinType
                 val targetUin = target.getFieldValue<String>("uin")
                 var targetUinType = target.getFieldValue<Int>("uinType")
 
@@ -86,22 +84,16 @@ object PttForward : SwitchHook(), OnMenuBuilder {
                     }
                 }
 
-                // 确保 uin 和 uinType 都有效再发送
                 if (targetUinType != -1) {
-                    // TIM中 uinType 需要 +1 以匹配正确的聊天类型
-                    val targetContact = ContactUtils.getContact(targetUinType + 1, targetUin)
-                    TIMSendMsgTool.sendMsg(targetContact, arrayListOf(msgElement))
+                    PttUtils.sendPtt(msgElement, targetUin, targetUinType)
                 }
             }
         } else {
-            // 如果没有多选列表，则处理单选情况
             val uin = extraData.getString("uin")
             val uinType = extraData.getInt("uintype", -1)
 
             if (uin != null && uinType != -1) {
-                // TIM中 uinType 需要 +1
-                val contact = ContactUtils.getContact(uinType + 1, uin)
-                TIMSendMsgTool.sendMsg(contact, arrayListOf(msgElement))
+                PttUtils.sendPtt(msgElement, uin, uinType)
             }
         }
     }
