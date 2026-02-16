@@ -14,9 +14,9 @@ import re.limus.timas.annotations.RegisterToUI
 import re.limus.timas.annotations.UiCategory
 import re.limus.timas.api.CreateElement
 import re.limus.timas.api.TIMCustomMenu
+import re.limus.timas.api.TIMPttTool
 import re.limus.timas.hook.base.SwitchHook
 import re.limus.timas.hook.items.message.core.OnMenuBuilder
-import re.limus.timas.hook.utils.PttUtils
 import top.sacz.xphelper.dexkit.DexFinder
 import top.sacz.xphelper.ext.callMethod
 import top.sacz.xphelper.ext.getFieldValue
@@ -85,7 +85,7 @@ object PttForward : SwitchHook(), OnMenuBuilder {
                 }
 
                 if (targetUinType != -1) {
-                    PttUtils.sendPtt(msgElement, targetUin, targetUinType)
+                    TIMPttTool.sendPtt(msgElement, targetUin, targetUinType)
                 }
             }
         } else {
@@ -93,7 +93,7 @@ object PttForward : SwitchHook(), OnMenuBuilder {
             val uinType = extraData.getInt("uintype", -1)
 
             if (uin != null && uinType != -1) {
-                PttUtils.sendPtt(msgElement, uin, uinType)
+                TIMPttTool.sendPtt(msgElement, uin, uinType)
             }
         }
     }

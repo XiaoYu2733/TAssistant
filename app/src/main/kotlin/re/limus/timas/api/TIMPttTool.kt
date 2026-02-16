@@ -1,13 +1,10 @@
-package re.limus.timas.hook.utils
+package re.limus.timas.api
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import re.limus.timas.api.ContactUtils
-import re.limus.timas.api.CreateElement
-import re.limus.timas.api.TIMSendMsgTool
 import java.lang.reflect.Field
 
-object PttUtils {
+object TIMPttTool {
 
     /**
      * 发送语音到指定联系人

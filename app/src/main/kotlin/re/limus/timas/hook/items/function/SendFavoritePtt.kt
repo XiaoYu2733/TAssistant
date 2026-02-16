@@ -14,8 +14,8 @@ import android.widget.FrameLayout
 import androidx.core.view.isVisible
 import re.limus.timas.annotations.RegisterToUI
 import re.limus.timas.annotations.UiCategory
+import re.limus.timas.api.TIMPttTool
 import re.limus.timas.hook.base.PluginHook
-import re.limus.timas.hook.utils.PttUtils
 import re.limus.timas.hook.utils.XLog
 import top.sacz.xphelper.XpHelper
 import top.sacz.xphelper.reflect.ClassUtils
@@ -78,7 +78,7 @@ object SendFavoritePtt : PluginHook() {
                 it.returnType == Int::class.javaPrimitiveType && it.parameterTypes.isEmpty()
             }?.apply { isAccessible = true }
 
-            val qfavField = PttUtils.findFieldByType(flaClass, qfavInterfaceClass)
+            val qfavField = TIMPttTool.findFieldByType(flaClass, qfavInterfaceClass)
                 ?.apply { isAccessible = true } ?: return
 
             val getFavService = qfavField.type.declaredMethods.find {
@@ -117,16 +117,16 @@ object SendFavoritePtt : PluginHook() {
             }
 
             // 5. 拦截搜索结果中的语音单击
-            val cbField = PttUtils.findFieldByType(audioHolderClass, CheckBox::class.java)
+            val cbField = TIMPttTool.findFieldByType(audioHolderClass, CheckBox::class.java)
                 ?.apply { isAccessible = true } ?: return
             val ivfHolderField = audioHolderClass.superclass?.declaredFields?.firstOrNull {
                 it.type.name.contains("com.qqfav.activity")
             }?.apply { isAccessible = true } ?: return
-            val favDataField = PttUtils.findFieldByType(audioHolderClass, favDataClass)
+            val favDataField = TIMPttTool.findFieldByType(audioHolderClass, favDataClass)
                 ?.apply { isAccessible = true } ?: return
             val getFavId = favDataClass.getMethod("getId").apply { isAccessible = true }
             val baseActivityClass = ClassUtils.findClass("mqq.app.BaseActivity")
-            val activityField = PttUtils.findFieldByType(audioHolderClass, baseActivityClass)
+            val activityField = TIMPttTool.findFieldByType(audioHolderClass, baseActivityClass)
                 ?.apply { isAccessible = true } ?: return
 
             audioHolderClass.declaredMethods.find {
@@ -173,7 +173,7 @@ object SendFavoritePtt : PluginHook() {
                     val uinType = intent.getIntExtra("uinType", -1)
                     if (uinType == -1) return
                     try {
-                        PttUtils.sendPtt(path, uin, uinType)
+                        TIMPttTool.sendPtt(path, uin, uinType)
                     } catch (t: Throwable) {
                         XLog.e(t)
                     }
