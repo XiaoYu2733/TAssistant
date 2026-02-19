@@ -17,25 +17,22 @@ import top.sacz.xphelper.activity.BaseActivity
 import java.io.File
 import java.io.FileOutputStream
 
-private const val SAF_REQUEST_CODE = 0x5AF1
-private const val SAF_CACHE_DIR = "saf_send"
-private const val EXTRA_ORIGINAL_BUNDLE = "ta_saf_original"
-
 class SAFAgentActivity : BaseActivity() {
-    
-    companion object {
-        fun launch(context: Context, extras: Bundle) {
-            context.startActivity(
-                Intent(context, SAFAgentActivity::class.java).apply {
-                    putExtra(
-                        "proxy_target_activity",
-                        "cooperation.qlink.QlinkStandardDialogActivity"
-                    )
-                    putExtra(EXTRA_ORIGINAL_BUNDLE, extras)
-                    if (context !is Activity) addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-            )
-        }
+    val safRequestCode = 0x5AF1
+    val safCacheDir = "saf_send"
+    val extraOriginalBundle = "ta_saf_original"
+
+    fun launch(context: Context, extras: Bundle) {
+        context.startActivity(
+            Intent(context, SAFAgentActivity::class.java).apply {
+                putExtra(
+                    "proxy_target_activity",
+                    "cooperation.qlink.QlinkStandardDialogActivity"
+                )
+                putExtra(extraOriginalBundle, extras)
+                if (context !is Activity) addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+        )
     }
 
     override fun onStart() {
@@ -59,7 +56,7 @@ class SAFAgentActivity : BaseActivity() {
                     putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 },
-                SAF_REQUEST_CODE
+                safRequestCode
             )
         } catch (e: Throwable) {
             XLog.e("SAFPicker: open failed", e)
@@ -70,7 +67,7 @@ class SAFAgentActivity : BaseActivity() {
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode != SAF_REQUEST_CODE || resultCode != RESULT_OK || data == null) {
+        if (requestCode != safRequestCode || resultCode != RESULT_OK || data == null) {
             finish()
             return
         }
@@ -90,7 +87,7 @@ class SAFAgentActivity : BaseActivity() {
 
         Thread {
             try {
-                val cacheDir = File(PathTool.getModuleCachePath(SAF_CACHE_DIR))
+                val cacheDir = File(PathTool.getModuleCachePath(safCacheDir))
                 cleanOldCache(cacheDir)
 
                 for ((i, uri) in uris.withIndex()) {
@@ -123,7 +120,7 @@ class SAFAgentActivity : BaseActivity() {
     }
 
     private fun resolveContact(): Any? {
-        val extras = intent.getBundleExtra(EXTRA_ORIGINAL_BUNDLE)
+        val extras = intent.getBundleExtra(extraOriginalBundle)
             ?: return ContactUtils.getCurrentContact()
 
         val uin = extras.getString("targetUin")

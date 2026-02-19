@@ -40,7 +40,7 @@ object SAFSelector : SwitchHook() {
 
                 val context = param.thisObject as? Context ?: return
                 try {
-                    SAFAgentActivity.launch(context, extractChatExtras(intent))
+                    SAFAgentActivity().launch(context, extractChatExtras(intent))
                     param.result = null
                 } catch (e: Throwable) {
                     XLog.e("SAFSelector: launch failed", e)
