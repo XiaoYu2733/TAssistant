@@ -5,8 +5,8 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.protobuf)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlinx.serialization)
     id("org.lsposed.lsparanoid")
 }
 val appVersionName = "v1.2.1"
@@ -205,11 +205,9 @@ dependencies {
     // ByteBuddy
     implementation(libs.byte.buddy.android)
 
-    // Json
-    implementation(libs.fastjson2)
-
     // ProtoBuf
     implementation(libs.protobuf.java.lite)
+    implementation(libs.kotlinx.serialization.protobuf)
 
     // Annotations
     implementation(project(":annotations"))
@@ -218,20 +216,6 @@ dependencies {
     ksp(project(":processor"))
 }
 
-protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:4.33.5"
-    }
-    generateProtoTasks {
-        all().forEach { task ->
-            task.builtins {
-                create("java") {
-                    option("lite")
-                }
-            }
-        }
-    }
-}
 lsparanoid {
     variantFilter = { variant ->
         if (variant.buildType == "release") {

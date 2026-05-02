@@ -18,16 +18,14 @@ okhttp = "5.3.2"
 
 # Xposed
 xposed = "82"
-xpHelper = "3.0"
+xpHelper = "3.4"
 
 # ByteBuddy
 byteBuddy = "1.18.5"
 
-# Json
-fastjson2 = "2.0.61"
-
 # ProtoBuf
-protobuf-javalite = "4.33.5"
+protobuf-javalite = "4.34.1"
+kotlinx-serialization = "1.11.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,14 +49,13 @@ byte-buddy-android = { group = "net.bytebuddy", name = "byte-buddy-android", ver
 # KSP
 ksp-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
 
-# Json
-fastjson2 = { module = "com.alibaba.fastjson2:fastjson2", version.ref = "fastjson2" }
-
 # ProtoBuf
 protobuf-java-lite = { group = "com.google.protobuf", name = "protobuf-java", version.ref = "protobuf-javalite" }
+kotlinx-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlinx-serialization" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
