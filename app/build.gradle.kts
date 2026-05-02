@@ -1,13 +1,7 @@
 import com.android.build.api.dsl.ApplicationExtension
-import com.android.build.api.dsl.DynamicFeatureExtension
-import com.android.build.gradle.AppExtension
+import com.android.build.api.variant.impl.VariantOutputImpl
 import java.io.ByteArrayOutputStream
-import javax.inject.Inject
-import org.gradle.api.provider.ValueSource
-import org.gradle.api.provider.ValueSourceParameters
-import org.gradle.process.ExecOperations
-import org.gradle.api.Project
-import java.io.File
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -15,6 +9,15 @@ plugins {
     alias(libs.plugins.ksp)
     id("org.lsposed.lsparanoid")
 }
+val appVersionName = "v1.2.1"
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.isFile) {
+        file.inputStream().use { load(it) }
+    }
+}
+val keystorePath: String? = localProperties.getProperty("KEYSTORE_PATH")
+
 abstract class GitCommitCount : ValueSource<Int, ValueSourceParameters.None> {
     @get:Inject abstract val execOperations: ExecOperations
 
@@ -41,8 +44,14 @@ abstract class GitShortHash : ValueSource<String, ValueSourceParameters.None> {
     }
 }
 
-val gitCommitCount = providers.of(GitCommitCount::class.java) {}!!
-val gitShortHash = providers.of(GitShortHash::class.java) {}!!
+val gitCommitCount = providers.of(GitCommitCount::class.java) {}
+val gitShortHash = providers.of(GitShortHash::class.java) {}
+val debugVersionNameSuffix = providers.provider {
+    getGitHeadRefsSuffix(rootProject, "debug")
+}
+val releaseVersionNameSuffix = providers.provider {
+    getGitHeadRefsSuffix(rootProject, "release")
+}
 
 extensions.configure<ApplicationExtension> {
     namespace = "re.limus.timas"
@@ -51,20 +60,43 @@ extensions.configure<ApplicationExtension> {
     defaultConfig {
         applicationId = "re.limus.timas"
         minSdk = 27
-        targetSdk = 36
+        targetSdk = 37
         versionCode = providers.provider { getBuildVersionCode(rootProject) }.get()
-        versionName = "v1.2.1"
+        versionName = appVersionName
 
         ndk {
             abiFilters.add("arm64-v8a")
         }
     }
 
+    signingConfigs {
+        create("release") {
+            if (!keystorePath.isNullOrBlank()) {
+                storeFile = file(keystorePath)
+                storePassword = localProperties.getProperty("KEYSTORE_PASSWORD")
+                keyAlias = localProperties.getProperty("KEY_ALIAS")
+                keyPassword = localProperties.getProperty("KEY_PASSWORD")
+                enableV2Signing = true
+                enableV3Signing = true
+            }
+        }
+
+        getByName("debug") {
+            if (!keystorePath.isNullOrBlank()) {
+                storeFile = file(keystorePath)
+                storePassword = localProperties.getProperty("KEYSTORE_PASSWORD")
+                keyAlias = localProperties.getProperty("KEY_ALIAS")
+                keyPassword = localProperties.getProperty("KEY_PASSWORD")
+                enableV2Signing = true
+                enableV3Signing = true
+            }
+        }
+    }
+
     buildTypes {
         debug {
-            versionNameSuffix = providers.provider {
-                getGitHeadRefsSuffix(rootProject, "debug")
-            }.get()
+            versionNameSuffix = debugVersionNameSuffix.get()
+            signingConfig = signingConfigs.getByName("debug")
         }
         release {
             isMinifyEnabled = true
@@ -73,9 +105,8 @@ extensions.configure<ApplicationExtension> {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            versionNameSuffix = providers.provider {
-                getGitHeadRefsSuffix(rootProject, "release")
-            }.get()
+            versionNameSuffix = releaseVersionNameSuffix.get()
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     packaging {
@@ -106,16 +137,17 @@ extensions.configure<ApplicationExtension> {
     }
 }
 
-configure<AppExtension> {
-    applicationVariants.all {
-        outputs.all {
-            val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-            output.outputFileName?.let { fileName ->
-                if (fileName.endsWith(".apk")) {
-                    val projectName = rootProject.name
-                    val currentVersionName = versionName
-                    output.outputFileName = "${projectName}-${currentVersionName}.apk"
+androidComponents {
+    onVariants { variant ->
+        variant.outputs.forEach { output ->
+            if (output is VariantOutputImpl) {
+                val versionNameSuffix = when (variant.buildType) {
+                    "debug" -> debugVersionNameSuffix.get()
+                    "release" -> releaseVersionNameSuffix.get()
+                    else -> ""
                 }
+                val newApkName = "${rootProject.name}-${appVersionName}$versionNameSuffix.apk"
+                output.outputFileName = newApkName
             }
         }
     }
