@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
     id("org.lsposed.lsparanoid")
 }
-val appVersionName = "v1.2.1"
+val appVersionName = "v1.2.2"
 val localProperties = Properties().apply {
     val file = rootProject.file("local.properties")
     if (file.isFile) {
