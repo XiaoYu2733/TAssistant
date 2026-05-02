@@ -21,7 +21,7 @@ xposed = "82"
 xpHelper = "3.4"
 
 # ByteBuddy
-byteBuddy = "1.18.5"
+byteBuddy = "1.18.8"
 
 # ProtoBuf
 protobuf-javalite = "4.34.1"
