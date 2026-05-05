@@ -2,15 +2,15 @@ package re.limus.timas.hook
 
 import android.content.Context
 import android.content.ContextWrapper
-import de.robv.android.xposed.IXposedHookLoadPackage
-import de.robv.android.xposed.IXposedHookZygoteInit
-import de.robv.android.xposed.IXposedHookZygoteInit.StartupParam
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
+import io.github.libxposed.api.XposedModule
+import io.github.libxposed.api.XposedModuleInterface.ModuleLoadedParam
+import io.github.libxposed.api.XposedModuleInterface.PackageReadyParam
 import top.sacz.xphelper.XpHelper
 
-class HookEntry : IXposedHookLoadPackage, IXposedHookZygoteInit {
+class HookEntry : XposedModule() {
 
     companion object {
         var loadPackageParam: LoadPackageParam? = null
@@ -18,16 +18,22 @@ class HookEntry : IXposedHookLoadPackage, IXposedHookZygoteInit {
 
     private val hookSteps: HookSteps = HookSteps()
 
-    override fun initZygote(startupParam: StartupParam) {
-        // 初始化 Zygote
-        XpHelper.initZygote(startupParam)
+    override fun onModuleLoaded(param: ModuleLoadedParam) {
+        XposedBridge.init(this)
+        XpHelper.initModulePath(getModuleApplicationInfo().sourceDir)
     }
 
-    override fun handleLoadPackage(loadParam: LoadPackageParam) {
+    override fun onPackageReady(loadParam: PackageReadyParam) {
+        if (!loadParam.isFirstPackage) return
         if (loadParam.packageName != "com.tencent.tim") return
         HookEnv.setHostAppPackageName(loadParam.packageName)
-        loadPackageParam = loadParam
-        val applicationCreateMethod = hookSteps.getApplicationCreateMethod(loadParam)
+        val legacyLoadParam = LoadPackageParam(
+            loadParam.packageName,
+            loadParam.applicationInfo,
+            loadParam.classLoader
+        )
+        loadPackageParam = legacyLoadParam
+        val applicationCreateMethod = hookSteps.getApplicationCreateMethod(legacyLoadParam) ?: return
 
         XposedBridge.hookMethod(applicationCreateMethod, object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {

@@ -22,11 +22,12 @@
 -dontpreverify
 -overloadaggressively
 
+-adaptresourcefilecontents META-INF/xposed/java_init.list
 -obfuscationdictionary obf-dict.txt
 -classobfuscationdictionary obf-dict.txt
 -repackageclasses "re.limus.timas.random"
 
--keep class re.limus.timas.hook.HookEntry { *; }
+-keep,allowoptimization,allowobfuscation public class * extends io.github.libxposed.api.XposedModule { public <init>(); }
 -keep,allowobfuscation class re.limus.timas.ui.SettingActivity { *; }
 -keep,allowobfuscation class re.limus.timas.activity.SAFAgentActivity { *; }
 

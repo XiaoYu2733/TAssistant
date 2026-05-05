@@ -17,8 +17,8 @@ lsparanoid = "0.6.0"
 okhttp = "5.3.2"
 
 # Xposed
-xposed = "82"
-xpHelper = "3.4"
+xposed = "101.0.1"
+xpHelper = "ad6196f73d"
 
 # ByteBuddy
 byteBuddy = "1.18.8"
@@ -40,8 +40,8 @@ lsparanoid = { group = "org.lsposed.lsparanoid", name = "gradle-plugin", version
 okhttp3 = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 
 # Xposed
-xposed-api = { group = "de.robv.android.xposed", name = "api", version.ref = "xposed" }
-xphelper = { group = "com.github.suzhelan", name = "XpHelper", version.ref = "xpHelper" }
+xposed-api = { module = "io.github.libxposed:api", version.ref = "xposed" }
+xphelper = { group = "com.github.relimus", name = "XPHelper", version.ref = "xpHelper" }
 
 # BytyBuddy-Android
 byte-buddy-android = { group = "net.bytebuddy", name = "byte-buddy-android", version.ref = "byteBuddy" }

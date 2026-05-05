@@ -114,7 +114,6 @@ extensions.configure<ApplicationExtension> {
             excludes.addAll(
                 arrayOf(
                     "kotlin/**",
-                    "META-INF/**",
                     "schema/**",
                     "**.bin",
                     "kotlin-tooling-metadata.json"
