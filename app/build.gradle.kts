@@ -99,12 +99,9 @@ extensions.configure<ApplicationExtension> {
             signingConfig = signingConfigs.getByName("debug")
         }
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            optimization {
+                enable = true
+            }
             versionNameSuffix = releaseVersionNameSuffix.get()
             signingConfig = signingConfigs.getByName("release")
         }
